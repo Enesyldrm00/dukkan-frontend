@@ -7,10 +7,16 @@ function Satis() {
     const [secilenUrun, setSecilenUrun] = useState("");
     const [adet, setAdet] = useState(1);
     const [mesaj, setMesaj] = useState("");
+    const [satislar, setSatislar] = useState([]);
 
     useEffect(() => {
-        api.get("/products").then((res) => setUrunler(res.data));
+        verileriGetir();
     }, []);
+
+    function verileriGetir() {
+        api.get("/products").then((res) => setUrunler(res.data));
+        api.get("/sales").then((res) => setSatislar(res.data));
+    }
 
     function sepeteEkle() {
         const urun = urunler.find((u) => u.id === Number(secilenUrun));
@@ -53,7 +59,7 @@ function Satis() {
             .then(() => {
                 setMesaj("Satış başarıyla tamamlandı!");
                 setSepet([]);
-                api.get("/products").then((res) => setUrunler(res.data));
+                verileriGetir();
             })
             .catch((err) => {
                 setMesaj(err.response?.data?.message || "Hata oluştu! Stok yetersiz olabilir.");
@@ -107,6 +113,32 @@ function Satis() {
                     </button>
                 </>
             )}
+
+            <h2 style={{ marginTop: "40px" }}>Satış Geçmişi</h2>
+            <table border="1" cellPadding="8" style={{ borderCollapse: "collapse", width: "100%" }}>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tarih</th>
+                        <th>Toplam Tutar</th>
+                        <th>Ürünler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {satislar.map((satis) => (
+                        <tr key={satis.id}>
+                            <td>{satis.id}</td>
+                            <td>{new Date(satis.tarih).toLocaleString("tr-TR")}</td>
+                            <td>{satis.toplamTutar} TL</td>
+                            <td>
+                                {satis.detaylar?.map((d, i) => (
+                                    <span key={i}>{d.urun?.urunAdi} x{d.adet}{i < satis.detaylar.length - 1 ? ", " : ""}</span>
+                                ))}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }

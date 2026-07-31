@@ -13,7 +13,7 @@ function App() {
                 <Link to="/kategoriler" style={{ color: "white", textDecoration: "none" }}>Kategoriler</Link>
                 <Link to="/satis" style={{ color: "white", textDecoration: "none" }}>Satış</Link>
             </nav>
-            <div style={{ padding: "20px" }}>
+           <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/urunler" element={<Urunler />} />
